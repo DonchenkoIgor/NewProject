@@ -1,3 +1,35 @@
+<?php
+session_start();
+
+
+if (!isset($_COOKIE['counter'])){
+    $counter = 0;
+}else{
+    $counter = $_COOKIE['counter'];
+}
+$counter++;
+
+setcookie('counter', $counter);
+setcookie('test', 1);
+
+if (!isset($_SESSION['user'])) {
+    $_SESSION['user'] = [];
+}
+
+if (!empty($_POST['email']) && !empty($_POST['password'])){
+    $_SESSION['is_logged_in'] = true;
+
+    $id = count($_SESSION['user']);
+    $_SESSION['last_email'] = $id;
+
+    $_SESSION['user']=[
+      'email'   =>  $_POST['email'],
+      'password' => $_POST['password']
+    ];
+    $_SESSION['form_submited'] = true;
+}
+?>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -33,6 +65,13 @@
     ?>
     </div>
     <?php endif; ?>
+            <?php
+            var_dump($_COOKIE);
+            echo '<br>' . '<br>';
+            var_dump($_SESSION);
+            ?>
+
+            <?php if (empty($_SESSION['is_logged_in']) || !$_SESSION['is_logged_in']) : ?>
 <form method="post" action="">
     <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Email</label>
@@ -49,6 +88,7 @@
     </div>
     <button type="submit" class="btn btn-primary">Sign up</button>
 </form>
+    <?php endif; ?>
         </div>
     </div>
 </body>
