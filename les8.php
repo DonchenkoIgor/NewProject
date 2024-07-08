@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'les9.php';
 
 if (!isset($_COOKIE['counter'])) {
     $counter = 0;
@@ -93,6 +94,9 @@ if (!empty($_POST['email']) && !empty($_POST['password'])) {
                            value="<?php echo htmlspecialchars($entered_password); ?>">
                 </div>
                 <button type="submit" class="btn btn-primary">Sign up</button>
+            </form>
+            <form method="post" action="">
+                <button type="submit" name="clear" class="btn btn-danger mt-3">Delete all</button>
             </form>
         </div>
     </div>
