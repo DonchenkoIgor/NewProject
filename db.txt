@@ -1,0 +1,41 @@
+create database study;
+use study;
+create table students
+(
+    id int primary key,
+    name varchar(50),
+    faculty_id int,
+    age varchar(50)
+);
+insert into students (id, name, faculty_id, age) VALUES
+     (1,'Ivan', 1, 20),
+     (2, 'Petro', 2, 21),
+     (3, 'Mariya', 1, 21);
+create table faculties
+(
+    faculty_id int primary key,
+    faculty_name varchar(50)
+);
+insert into faculties(faculty_id, faculty_name) values
+      (1, 'Informatics'),
+      (2, 'Economics');
+create table subject
+(
+    subject_id int primary key,
+    subject_name varchar(50)
+);
+insert into subject (subject_id, subject_name) values
+    (1, 'Mathematics'),
+    (2, 'Economics'),
+    (3, 'Informatics');
+create table grades
+(
+    grade_id int primary key,
+    student_id int,
+    subject_id int,
+    grade int
+);
+insert into grades(grade_id, student_id, subject_id, grade) values
+     (1,1,1,90),
+     (2,2,2,85),
+     (3,3,3,90);
