@@ -1,6 +1,40 @@
 <?php
 session_start();
 require_once 'les9.php';
+require_once 'les11.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+    if (isset($_POST['register'])){
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        registerUser($email, $password);
+    }
+
+    if (isset($_POST['login'])){
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        if (loginUser($email, $password)){
+            $_SESSION['is_logged_in'] = true;
+            echo "User logged in successfully";
+        }else{
+            echo "Invalid email or password";
+        }
+    }
+    if (isset($_POST['message']) && isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in']) {
+        $message = $_POST['message'];
+        $userId = $_SESSION['user_id'];
+        saveMessage ($userId, $message);
+        echo "Message saved successfully";
+    }
+    if (isset($_POST['clear'])){
+        clearUserData();
+        $_SESSION ['user'] = [];
+        $_SESSION ['is_logged_in'] = false;
+    }
+}
+
+$messages = getMessage();
+
 
 if (!isset($_COOKIE['counter'])) {
     $counter = 0;
@@ -71,10 +105,10 @@ if (!empty($_POST['email']) && !empty($_POST['password'])) {
                 </div>
             <?php endif; ?>
             <?php
-            var_dump($_COOKIE);
+/*            var_dump($_COOKIE);
             echo '<br>' . '<br>';
             var_dump($_SESSION);
-            ?>
+            */?>
             <form method="post" action="">
                 <div class="mb-3">
                     <label for="exampleInputEmail1" class="form-label">Email</label>
@@ -93,11 +127,49 @@ if (!empty($_POST['email']) && !empty($_POST['password'])) {
                            id="exampleInputPassword1"
                            value="<?php echo htmlspecialchars($entered_password); ?>">
                 </div>
-                <button type="submit" class="btn btn-primary">Sign up</button>
+                <button type="submit" name="login" class="btn btn-primary">Log in</button>
             </form>
+
+            <form method="post" action="">
+                <h3>Register</h3>
+                <div class="mb-3">
+                    <label for="registerEmail" class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" id="registerEmail">
+                </div>
+                <div class="mb-3">
+                    <label for="registerPassword" class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" id="registerPassword">
+                </div>
+                <button type="submit" name="register" class="btn btn-secondary">Register</button>
+            </form>
+
             <form method="post" action="">
                 <button type="submit" name="clear" class="btn btn-danger mt-3">Delete all</button>
             </form>
+
+            <?php if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in']) : ?>
+                <form method="post" action="">
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <input type="text" name="message" class="form-control" id="message">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Message</button>
+                </form>
+            <?php endif; ?>
+            <form method="post" action="">
+                <button type="submit" name="clear" class="btn btn-danger mt-3">Delete all</button>
+            </form>
+
+            <h2>Messages</h2>
+            <ul class="list-group">
+                <?php foreach ($messages as $message) : ?>
+                    <li class="list-group-item">
+                        <strong><?php echo htmlspecialchars($message['email']); ?></strong><br>
+                        <small><?php echo htmlspecialchars($message['created_at']); ?></small><br>
+                        <?php echo htmlspecialchars($message['message']); ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
         </div>
     </div>
 </div>
