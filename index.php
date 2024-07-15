@@ -105,10 +105,10 @@ if (!empty($_POST['email']) && !empty($_POST['password'])) {
                 </div>
             <?php endif; ?>
             <?php
-/*            var_dump($_COOKIE);
-            echo '<br>' . '<br>';
-            var_dump($_SESSION);
-            */?>
+            /*            var_dump($_COOKIE);
+                        echo '<br>' . '<br>';
+                        var_dump($_SESSION);
+                        */?>
             <form method="post" action="">
                 <div class="mb-3">
                     <label for="exampleInputEmail1" class="form-label">Email</label>
