@@ -1,38 +1,43 @@
 <?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+
 $host = 'localhost';
 $username = 'root';
 $password = '';
 $dbName   = 'myDB';
 
-$con = mysqli_connect($host, $username, $password, $dbName);
-if ($con->connect_error){
-    die("No" . $con->connect_error);
+try {
+    $con = new PDO("mysql:host=$host; dbname=$dbName", $username, $password);
+    $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+}catch (PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
 }
 
 function registerUser($email, $password)
 {
     global $con;
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $con -> prepare("INSERT INTO users (email, password) VALUES (?, ?)");
-    $stmt->bind_param("ss", $email, $hashedPassword);
+    $stmt = $con -> prepare("INSERT INTO users (email, password) VALUES (:email, :password)");
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':password', $hashedPassword);
     $stmt->execute();
-    $stmt->close();
 }
 
 function loginUser($email, $password)
 {
     global $con;
-    $stmt = $con->prepare("SELECT id, password FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
+    $stmt = $con->prepare("SELECT id, password FROM users WHERE email = :email");
+    $stmt->bindParam(':email', $email);
     $stmt->execute();
-    $stmt->bind_result($userId, $hashedPassword);
-    $stmt->fetch();
-    $stmt->close();
+    $user=$stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (password_verify($password, $hashedPassword)) {
-        $_SESSION['user_id'] = $userId;
+    if ($user && password_verify($password, $user['password'])){
+        $_SESSION['user_id'] = $user['id'];
         return true;
-    } else {
+    }else{
         return false;
     }
 }
@@ -40,10 +45,10 @@ function loginUser($email, $password)
 function saveMessage($userId, $message)
 {
     global $con;
-    $stmt = $con->prepare("INSERT INTO messages (user_id, message) VALUES (?, ?)");
-    $stmt->bind_param("is", $userId, $message);
+    $stmt = $con->prepare("INSERT INTO messages (user_id, message) VALUES (:user_id, :message)");
+    $stmt->bindParam(':user_id', $userId);
+    $stmt->bindParam(':message', $message);
     $stmt->execute();
-    $stmt->close();
 }
 
 function getMessage()
@@ -51,14 +56,8 @@ function getMessage()
     global $con;
     $stmt = $con->prepare("SELECT messages.message, messages.created_at, users.email FROM messages JOIN users ON messages.user_id = users.id ORDER BY messages.created_at DESC");
     $stmt->execute();
-    $result = $stmt->get_result();
-    $messages = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-    return $messages;
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
-
-
 
 ?>
 
