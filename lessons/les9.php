@@ -4,7 +4,7 @@ $file_path = 'data.txt';
 
 function saveUserData($data){
     global $file_path;
-    file_put_contents($file_path, json_encode($data) . PHP_EOL, FILE_APPEND);
+    file_put_contents($file_path, les9 . phpjson_encode($data) . PHP_EOL, FILE_APPEND);
 }
 
 function getUserData(){

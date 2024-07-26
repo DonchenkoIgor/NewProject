@@ -157,6 +157,6 @@ $warrior = new Warrior();
 $mage = new Mage();
 $archer = new Archer();
 
-$battle = new Battle($archer, $mage);
+$battle = new Battle($warrior, $mage);
 $winner = $battle->fight();
 echo "Бій закінчено , переможець: " . get_class($winner);
